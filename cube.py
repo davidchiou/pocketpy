@@ -29,13 +29,13 @@ class Cube(object):
     def get_status(self):
         return ' ' * 2 + self.piece_4.back + self.piece_6.back + '\n' + ' ' * 2 + self.piece_0.back + self.piece_2.back + '\n' + self.piece_4.left + self.piece_0.left + self.piece_0.down + self.piece_2.down + self.piece_2.right + self.piece_6.right + self.piece_6.up + self.piece_4.up + '\n' + self.piece_5.left + self.piece_1.left + self.piece_1.down + self.piece_3.down + self.piece_3.right + self.piece_7.right + self.piece_7.up + self.piece_5.up + '\n' + ' ' * 2 + self.piece_1.front + self.piece_3.front + '\n' + ' ' * 2 + self.piece_5.front + self.piece_7.front 
 
-piece_0 = Piece(0, ['', '', 'B', 'W', '', 'O'])#Piece(0, ['', '', 'B', 'O', '', 'Y'])
-piece_1 = Piece(1, ['R', '', '', 'G', '', 'Y'])#Piece(1, ['G', '', '', 'O', '', 'Y'])
-piece_2 = Piece(2, ['', 'Y', 'R', '', '', 'B'])#Piece(2, ['', 'R', 'B', '', '', 'Y'])
-piece_3 = Piece(3, ['W', 'R', '', '', '', 'G'])#Piece(3, ['G', 'R', '', '', '', 'Y'])
-piece_4 = Piece(4, ['', '', 'W', 'R', 'B', ''])#Piece(4, ['', '', 'B', 'O', 'W', ''])
-piece_5 = Piece(5, ['Y', '', '', 'O', 'G', ''])#Piece(5, ['G', '', '', 'O', 'W', ''])
-piece_6 = Piece(6, ['', 'W', 'O', '', 'G', ''])#Piece(6, ['', 'R', 'B', '', 'W', ''])
+piece_0 = Piece(0, ['', '', 'R', 'W', '', 'B'])#Piece(0, ['', '', 'B', 'O', '', 'Y'])
+piece_1 = Piece(1, ['O', '', '', 'G', '', 'W'])#Piece(1, ['G', '', '', 'O', '', 'Y'])
+piece_2 = Piece(2, ['', 'G', 'Y', '', '', 'O'])#Piece(2, ['', 'R', 'B', '', '', 'Y'])
+piece_3 = Piece(3, ['R', 'Y', '', '', '', 'G'])#Piece(3, ['G', 'R', '', '', '', 'Y'])
+piece_4 = Piece(4, ['', '', 'R', 'Y', 'B', ''])#Piece(4, ['', '', 'B', 'O', 'W', ''])
+piece_5 = Piece(5, ['R', '', '', 'G', 'W', ''])#Piece(5, ['G', '', '', 'O', 'W', ''])
+piece_6 = Piece(6, ['', 'W', 'B', '', 'O', ''])#Piece(6, ['', 'R', 'B', '', 'W', ''])
 piece_7 = Piece(7, ['O', 'B', '', '', 'Y', ''])#Piece(7, ['G', 'R', '', '', 'W', ''])
 
 cube_test = Cube([piece_0, piece_1, piece_2, piece_3, piece_4, piece_5, piece_6, piece_7])
@@ -690,9 +690,170 @@ def b_inverse_turn(cube):
     turned_cube.piece_7 = cube.piece_7
     return turned_cube
 
+def double_r_turn(cube):
+    turned_cube = r_turn(cube)
+    turned_cube = r_turn(turned_cube)
+    return turned_cube
+
+def double_u_turn(cube):
+    turned_cube = u_turn(cube)
+    turned_cube = u_turn(turned_cube)
+    return turned_cube
+
+def double_f_turn(cube):
+    turned_cube = f_turn(cube)
+    turned_cube = f_turn(turned_cube)
+    return turned_cube
+
+# f r b l u d
+
+piece_0 = Piece(0, ['', '', 'R', 'W', '', 'B'])
+piece_1 = Piece(1, ['O', '', '', 'W', '', 'B'])
+piece_2 = Piece(2, ['', 'Y', 'R', '', '', 'B'])
+piece_3 = Piece(3, ['O', 'Y', '', '', '', 'B'])
+piece_4 = Piece(4, ['', '', 'R', 'W', 'G', ''])
+piece_5 = Piece(5, ['O', '', '', 'W', 'G', ''])
+piece_6 = Piece(6, ['', 'Y', 'R', '', 'G', ''])
+piece_7 = Piece(7, ['O', 'Y', '', '', 'G', ''])
+
+solved_cube = Cube([piece_0, piece_1, piece_2, piece_3, piece_4, piece_5, piece_6, piece_7])
+
+print solved_cube.get_status()
 
 
 
+frontier_unsolved = [[0, [], cube_test]]
+visited_unsolved = []
+dict_unsolved = {}
+
+frontier_solved = [[0, [], solved_cube]]
+visited_solved = []
+dict_solved = {}
+
+for i in range(6):
+    
+    time1 = len(frontier_unsolved)
+    time2 = len(frontier_solved)
+    for j in range(time1):
+        curcost, curpath, curstatus = frontier_unsolved.pop()
+        if curstatus.get_status() not in visited_unsolved:
+            visited_unsolved.append(curstatus.get_status())
+            dict_unsolved[curstatus.get_status()] = curpath
+
+            for status in dict_unsolved:
+                if status in dict_solved:
+                    print dict_unsolved[status] + dict_solved[status][::-1]
+                    exit()
+        
+            r_turned = r_turn(curstatus)
+            frontier_unsolved.append([curcost + 1, curpath + ['r'], r_turned])
+            
+            #l_turned = l_turn(curstatus)
+            #frontier_unsolved.append([curcost + 1, curpath + ['l'], l_turned])
+
+            u_turned = u_turn(curstatus)
+            frontier_unsolved.append([curcost + 1, curpath + ['u'], u_turned])
+
+            #d_turned = d_turn(curstatus)
+            #frontier_unsolved.append([curcost + 1, curpath + ['d'], d_turned])
+
+            f_turned = f_turn(curstatus)
+            frontier_unsolved.append([curcost + 1, curpath + ['f'], f_turned])
+
+            #b_turned = b_turn(curstatus)
+            #frontier_unsolved.append([curcost + 1, curpath + ['b'], b_turned])
+
+            r_inverse_turned = r_inverse_turn(curstatus)
+            frontier_unsolved.append([curcost + 1, curpath + ['r_'], r_inverse_turned])
+
+            #l_inverse_turned = l_inverse_turn(curstatus)
+            #frontier_unsolved.append([curcost + 1, curpath + ['l_'], l_inverse_turned])
+
+            u_inverse_turned = u_inverse_turn(curstatus)
+            frontier_unsolved.append([curcost + 1, curpath + ['u_'], u_inverse_turned])
+
+            #d_inverse_turned = d_inverse_turn(curstatus)
+            #frontier_unsolved.append([curcost + 1, curpath + ['d_'], d_inverse_turned])
+
+            f_inverse_turned = f_inverse_turn(curstatus)
+            frontier_unsolved.append([curcost + 1, curpath + ['f_'], f_inverse_turned])
+
+            #b_inverse_turned = b_inverse_turn(curstatus)
+            #frontier_unsolved.append([curcost + 1, curpath + ['b_'], b_inverse_turned])
+            
+            f_double_turned = double_f_turn(curstatus)
+            frontier_unsolved.append([curcost + 1, curpath + ['f2'], f_double_turned])
+
+            r_double_turned = double_r_turn(curstatus)
+            frontier_unsolved.append([curcost + 1, curpath + ['r2'], r_double_turned])
+
+            u_double_turned = double_u_turn(curstatus)
+            frontier_unsolved.append([curcost + 1, curpath + ['u2'], u_double_turned])
+            
+            frontier_unsolved.sort()
+            frontier_unsolved.reverse()
+
+    for k in range(time2):
+        curcost, curpath, curstatus = frontier_solved.pop()
+        if curstatus.get_status() not in visited_solved:
+            visited_solved.append(curstatus.get_status())
+            dict_solved[curstatus.get_status()] = curpath
+
+            for status in dict_solved:
+                if status in dict_unsolved:
+                    print dict_unsolved[status] + dict_solved[status][::-1]
+                    exit()
+                
+            r_turned = r_turn(curstatus)
+            frontier_solved.append([curcost + 1, curpath + ['r_'], r_turned])
+
+            #l_turned = l_turn(curstatus)
+            #frontier_solved.append([curcost + 1, curpath + ['l_'], l_turned])
+
+            u_turned = u_turn(curstatus)
+            frontier_solved.append([curcost + 1, curpath + ['u_'], u_turned])
+
+            #d_turned = d_turn(curstatus)
+            #frontier_solved.append([curcost + 1, curpath + ['d_'], d_turned])
+
+            f_turned = f_turn(curstatus)
+            frontier_solved.append([curcost + 1, curpath + ['f_'], f_turned])
+
+            #b_turned = b_turn(curstatus)
+            #frontier_solved.append([curcost + 1, curpath + ['b_'], b_turned])
+
+            r_inverse_turned = r_inverse_turn(curstatus)
+            frontier_solved.append([curcost + 1, curpath + ['r'], r_inverse_turned])
+
+            #l_inverse_turned = l_inverse_turn(curstatus)
+            #frontier_solved.append([curcost + 1, curpath + ['l'], l_inverse_turned])
+
+            u_inverse_turned = u_inverse_turn(curstatus)
+            frontier_solved.append([curcost + 1, curpath + ['u'], u_inverse_turned])
+
+            #d_inverse_turned = d_inverse_turn(curstatus)
+            #frontier_solved.append([curcost + 1, curpath + ['d'], d_inverse_turned])
+
+            f_inverse_turned = f_inverse_turn(curstatus)
+            frontier_solved.append([curcost + 1, curpath + ['f'], f_inverse_turned])
+
+            #b_inverse_turned = b_inverse_turn(curstatus)
+            #frontier_solved.append([curcost + 1, curpath + ['b'], b_inverse_turned])
+
+           
+            f_double_turned = double_f_turn(curstatus)
+            frontier_solved.append([curcost + 1, curpath + ['f2'], f_double_turned])
+
+            r_double_turned = double_r_turn(curstatus)
+            frontier_solved.append([curcost + 1, curpath + ['r2'], r_double_turned])
+
+            u_double_turned = double_u_turn(curstatus)
+            frontier_solved.append([curcost + 1, curpath + ['u2'], u_double_turned])
+
+            frontier_solved.sort()
+            frontier_solved.reverse()
+
+"""
 final_status = ' ' * 2 + 'B' * 2 + '\n' + ' ' * 2 + 'B' * 2 + '\n' + 'O' * 2 + 'Y' * 2 + 'R' * 2 + 'W' * 2 + '\n' + 'O' * 2 + 'Y' * 2 + 'R' * 2 + 'W' * 2 + '\n' + ' ' * 2 + 'G' * 2 + '\n' + ' ' * 2 + 'G' * 2
 
 def get_start_state():
@@ -714,55 +875,52 @@ def solve_first_layer():
         if nowNode.get_status() not in visited:
             visited.append(nowNode.get_status())
             dict1[nowNode.get_status()] = nowpath
-            if is_goal_state(nowNode):
-                print nowpath
-                print nowNode.get_status()
-                return [0, nowNode, nowpath], visited, dict1
-            else:
-                if nowCost >= 7:
-                    continue
-                r_turned = r_turn(nowNode)
-                frontier.append([nowCost + 1, r_turned, nowpath + ['r']])
-               
-                l_turned = l_turn(nowNode)
-                frontier.append([nowCost + 1, l_turned, nowpath + ['l']])
-                
-                u_turned = u_turn(nowNode)
-                frontier.append([nowCost + 1, u_turned, nowpath + ['u']])
 
-                d_turned = d_turn(nowNode)
-                frontier.append([nowCost + 1, d_turned, nowpath + ['d']])
+            if nowCost >= 7:
+                continue
+            r_turned = r_turn(nowNode)
+            frontier.append([nowCost + 1, r_turned, nowpath + ['r']])
+           
+            l_turned = l_turn(nowNode)
+            frontier.append([nowCost + 1, l_turned, nowpath + ['l']])
+            
+            u_turned = u_turn(nowNode)
+            frontier.append([nowCost + 1, u_turned, nowpath + ['u']])
 
-                f_turned = f_turn(nowNode)
-                frontier.append([nowCost + 1, f_turned, nowpath + ['f']])
+            d_turned = d_turn(nowNode)
+            frontier.append([nowCost + 1, d_turned, nowpath + ['d']])
 
-                b_turned = b_turn(nowNode)
-                frontier.append([nowCost + 1, b_turned, nowpath + ['b']])
-                
-                r_inverse_turned = r_inverse_turn(nowNode)
-                frontier.append([nowCost + 1, r_inverse_turned, nowpath + ['r_']])
-                
-                l_inverse_turned = l_inverse_turn(nowNode)
-                frontier.append([nowCost + 1, l_inverse_turned, nowpath + ['l_']])
-                
-                u_inverse_turned = u_inverse_turn(nowNode)
-                frontier.append([nowCost + 1, u_inverse_turned, nowpath + ['u_']])
-                
-                d_inverse_turned = d_inverse_turn(nowNode)
-                frontier.append([nowCost + 1, d_inverse_turned, nowpath + ['d_']])
-                
-                f_inverse_turned = f_inverse_turn(nowNode)
-                frontier.append([nowCost + 1, f_inverse_turned, nowpath + ['f_']])
-               
-                b_inverse_turned = b_inverse_turn(nowNode)
-                frontier.append([nowCost + 1, b_inverse_turned, nowpath + ['b_']])
-                
+            f_turned = f_turn(nowNode)
+            frontier.append([nowCost + 1, f_turned, nowpath + ['f']])
+
+            b_turned = b_turn(nowNode)
+            frontier.append([nowCost + 1, b_turned, nowpath + ['b']])
+            
+            r_inverse_turned = r_inverse_turn(nowNode)
+            frontier.append([nowCost + 1, r_inverse_turned, nowpath + ['r_']])
+            
+            l_inverse_turned = l_inverse_turn(nowNode)
+            frontier.append([nowCost + 1, l_inverse_turned, nowpath + ['l_']])
+            
+            u_inverse_turned = u_inverse_turn(nowNode)
+            frontier.append([nowCost + 1, u_inverse_turned, nowpath + ['u_']])
+            
+            d_inverse_turned = d_inverse_turn(nowNode)
+            frontier.append([nowCost + 1, d_inverse_turned, nowpath + ['d_']])
+            
+            f_inverse_turned = f_inverse_turn(nowNode)
+            frontier.append([nowCost + 1, f_inverse_turned, nowpath + ['f_']])
+           
+            b_inverse_turned = b_inverse_turn(nowNode)
+            frontier.append([nowCost + 1, b_inverse_turned, nowpath + ['b_']])
+            
+
     return None, visited , dict1
 first_layer, visited , dict1 = solve_first_layer()
 
 
-piece_0 = Piece(0, ['', '', 'B', 'O', '', 'Y'])
-piece_1 = Piece(1, ['G', '', '', 'O', '', 'Y'])
+piece_0 = Piece(0, ['', '', 'B', 'O', '', 'Y']) 
+piece_1 = Piece(1, ['G', '', '', 'O', '', 'Y']) 
 piece_2 = Piece(2, ['', 'R', 'B', '', '', 'Y'])
 piece_3 = Piece(3, ['G', 'R', '', '', '', 'Y'])
 piece_4 = Piece(4, ['', '', 'B', 'O', 'W', ''])
@@ -828,9 +986,9 @@ path, un_visited , dict2 = unsolve()
 for status in visited:
     if status in un_visited:
         print dict1[status]
-        print dict2[status]
+        print dict2[status][::-1]
         break
-
+"""
 
 
 
